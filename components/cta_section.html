@@ -1,0 +1,52 @@
+{% set section = include_dict.section %}
+{% set padding_top = section.padding_top | default('medium', true) %}
+{% set padding_bottom = section.padding_bottom | default('medium', true) %}
+{% set align_x = section.align | default('left', true) %}
+{% set bg_color = section.background_color | default('none', true) %}
+{% set image_pos = section.image_position | default('left', true) %}
+
+<section {{ classNames('section', 'cta', {
+	'bg-blue': bg_color == 'blue',
+	'bg-gray': bg_color == 'gray'
+}) }}>
+	<div class="container">
+		<div class="grid items-center">
+			<div {{ classNames('cta__body', 'cell-12', {
+				'cell-md-6': section.image,
+				'text-center': align_x == 'center',
+				'pt-4': padding_top == 'small',
+				'pt-6': padding_top == 'medium' or padding_top == 'large',
+				'pt-md-8': padding_top == 'large',
+				'pb-4': padding_bottom == 'small',
+				'pb-6': padding_bottom == 'medium' or padding_bottom == 'large',
+				'pb-md-8': padding_bottom == 'large'
+			}) }}>
+				{% if section.title %}
+				<h2 class="cta__title mb-3">{{ section.title }}</h2>
+				{% endif %}
+				{% if section.subtitle %}
+				<div {{ classNames('cta__subtitle', 'mb-3', {
+					'mt-3': section.title
+				}) }}>{{ section.subtitle }}</div>
+				{% endif %}
+				{% if section.actions %}
+				<div {{ classNames('section__actions', 'btn-group', {
+					'justify-center': align_x == 'center',
+					'mt-4': section.title or section.subtitle
+				}) }}>
+					{% set include_dict = {'actions': section.actions} %}
+					{% include "section_actions.html" %}
+				</div>
+				{% endif %}
+			</div>
+
+			{% if section.image %}
+			<div {{ classNames('cta__image', 'cell-12', 'cell-md-6', {
+				'order-md-first': image_pos == 'left'
+			}) }}>
+				<img src="{{ section.image | relative_url }}" alt="{{ section.image_alt }}" class="mx-auto" />
+			</div>
+			{% endif %}
+		</div>
+	</div>
+</section>

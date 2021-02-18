@@ -1,0 +1,90 @@
+{% extends "body.html" %}
+
+{% block content %}
+
+<article class="post pt-4 pb-6">
+	{% set has_image = false %}
+	{% if page.params.image %}
+		{% set has_image = true %}
+	{% endif %}
+	{% set image_pos = page.params.image_position | default('top', true) %}
+	<div {{ classNames('post__hero', 'container', {
+		'container--medium': image_pos == 'top' or has_image == false
+	}) }}>
+		<div {{ classNames('mb-6', {
+			'grid': image_pos != 'top'
+		}) }}>
+			{% if has_image %}
+			<div {{ classNames('post__image', 'mb-4', 'mb-sm-6', {
+				'mb-lg-0': image_pos != 'top',
+				'cell-12': image_pos != 'top',
+				'cell-md-6': image_pos != 'top'
+			}) }}>
+				<img src="{{ page.params.image | relative_url }}" alt="{{ page.params.image_alt }}" />
+			</div>
+			{% endif %}
+			<header {{ classNames('post__header', 'text-center', {
+				'cell-12': image_pos != 'top',
+				'cell-md-6': image_pos != 'top',
+				'order-md-first': has_image and image_pos == 'right',
+				'mt-md-7': has_image and image_pos != 'top'
+			}) }}>
+				{% if page.params.category %}
+				<div class="post__cat mb-3">
+					{% set include_dict = {'category': page.params.category} %}
+					{% include "blog_post_category.html" %}
+				</div>
+				{% endif %}
+				<h1 class="post__title mt-0">{{ page.params.title }}</h1>
+				{% if page.params.excerpt %}
+				<div class="post__subtitle">{{ page.params.excerpt }}</div>
+				{% endif %}
+				{% if site.params.domain %}
+				<div class="post__share flex justify-center mt-4">
+					{% set domain = site.params.domain | trim('/') %}
+					{% set page_rel_url = page.url | relative_url %}
+					{% set page_abs_url = domain | append ( page_rel_url ) %}
+					<a class="btn btn--icon btn--primary mb-3 mx-2" target="_blank" href="https://www.linkedin.com/shareArticle?mini=true&url={{ page_abs_url }}" rel="noopener">
+						<span class="sr-only">LinkedIn</span>
+						{% set include_dict = {'icon': 'linkedin'} %}
+						{% include "icon.html" %}
+					</a>
+					<a class="btn btn--icon btn--primary mb-3 mx-2" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u={{ page_abs_url }}" rel="noopener">
+						<span class="sr-only">Facebook</span>
+						{% set include_dict = {'icon': 'facebook'} %}
+						{% include "icon.html" %}
+					</a>
+					<a class="btn btn--icon btn--primary mb-3 mx-2" target="_blank" href="https://twitter.com/intent/tweet?url={{ page_abs_url }}" rel="noopener">
+						<span class="sr-only">Twitter</span>
+						{% set include_dict = {'icon': 'twitter'} %}
+						{% include "icon.html" %}
+					</a>
+				</div>
+				{% endif %}
+			</header>
+		</div>
+	</div>
+	<div class="container container--medium">
+		<div class="post__meta flex-lg mb-4">
+			{% if page.params.author %}
+				{% set author_data = getData(page.params.author) %}
+				<div class="mr-1">Von {% if author_data.link %}<a href="{{ author_data.link | relative_url }}">{{ author_data.first_name }} {{ author_data.last_name }}</a>{% else %}<span>{{ author_data.first_name }} {{ author_data.last_name }}</span>{% endif %},</div>
+			{% endif %}
+			<div class="mr-1">veröffentlicht am <time datetime="{{page.date | date_format("%Y-%m-%d %H:%M") }}">{{ page.date | date_format("%d.%m.%Y") }}</time>.</div>
+			{% if page.params.credits %}
+			<div class="mr-1">{{ page.params.credits }}</div>
+			{% endif %}
+		</div>
+		<div class="post__body text-block">
+			{{ page.content }}
+		</div>
+	</div>
+</article>
+
+{% for section in page.params.sections %}
+	{% set include_dict = {'section': section, 'site': site, 'section_index': loop.index, 'page': page} %}
+	{% set component = section.type | component_file %}
+	{% include component %}
+{% endfor %}
+
+{% endblock %}

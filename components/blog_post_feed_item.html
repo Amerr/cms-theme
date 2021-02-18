@@ -1,0 +1,51 @@
+{% set post = include_dict.post_page %}
+{% set blog_feed_section = include_dict.blog_feed_section %}
+{% set columns = include_dict.columns %}
+
+<article {{ classNames('cell-12', 'mb-5', 'mb-md-4', {
+	'cell-md-6': columns == 'two',
+	'cell-md-4': columns == 'three',
+	'cell-md-3': columns == 'four'
+}) }}>
+	<div class="post-card">
+		{% if blog_feed_section.show_image and post.params.thumb_image %}
+		<div class="post-card__image mb-4">
+			<a href="{{ post.url | relative_url }}">
+				<img src="{{ post.params.thumb_image | relative_url }}" alt="{{ post.params.thumb_image_alt }}" />
+				<div class="post-card__overlay"><span class="post-card__overlay-text">Read</span></div>
+			</a>
+		</div>
+		{% endif %}
+		<div class="post-card__body">
+			{% if blog_feed_section.show_category and post.params.category %}
+			<div class="post-card__cat mb-2">
+				{% set include_dict = {'category': post.params.category} %}
+				{% include "blog_post_category.html" %}
+			</div>
+			{% endif %}
+			{% if blog_feed_section.title %}
+			<h3 {{ classNames('post-card__title', 'mt-0', {
+				'h2': columns == 'one',
+				'h5': columns != 'one'
+			}) }}><a href="{{ post.url | relative_url }}">{{ post.params.title }}</a></h3>
+			{% else %}
+			<h2 {{ classNames('post-card__title', 'mt-0', {
+				'h2': columns == 'one',
+				'h5': columns != 'one'
+			}) }}><a href="{{ post.url | relative_url }}">{{ post.params.title }}</a></h2>
+			{% endif %}
+			{% if blog_feed_section.show_excerpt and post.params.excerpt %}
+			<p class="post-card__copy">
+				{{ post.params.excerpt }}
+			</p>
+			{% endif %}
+			{% if blog_feed_section.show_author and post.params.author %}
+				{% set author_data = getData(post.params.author) %}
+				<div class="post-card__meta">{% if author_data.link %}<a href="{{ author_data.link | relative_url }}">{{ author_data.first_name }} {{ author_data.last_name }}</a>{% else %}<span>{{ author_data.first_name }} {{ author_data.last_name }}</span>{% endif %}</div>
+			{% endif %}
+			{% if blog_feed_section.show_date %}
+			<div class="post-card__meta"><time datetime="{{post.date | date_format("%Y-%m-%d %H:%M") }}">{{ post.date | date_format("%B %d, %Y") }}</time></div>
+			{% endif %}
+		</div>
+	</div>
+</article>

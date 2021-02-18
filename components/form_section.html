@@ -1,0 +1,60 @@
+{% set section = include_dict.section %}
+{% set padding_top = section.padding_top | default('medium', true) %}
+{% set padding_bottom = section.padding_bottom | default('medium', true) %}
+{% set align_x = section.align | default('left', true) %}
+{% set bg_color = section.background_color | default('none', true) %}
+{% set has_text = false %}
+{% if section.title or section.subtitle %}
+	{% set has_text = true %}
+{% endif %}
+
+<section {{ classNames('section', 'form-section', {
+	'bg-blue': bg_color == 'blue',
+	'bg-gray': bg_color == 'gray',
+	'pt-4': padding_top == 'small',
+	'pt-6': padding_top == 'medium' or padding_top == 'large',
+	'pt-md-8': padding_top == 'large',
+	'pb-4': padding_bottom == 'small',
+	'pb-6': padding_bottom == 'medium' or padding_bottom == 'large',
+	'pb-md-8': padding_bottom == 'large'
+}) }}>
+	<div class="container">
+		{% if has_text %}
+		<div {{ classNames('section__body', {
+			'text-center': align_x == 'center'
+		}) }}>
+			{% if section.title %}
+			<h2 class="section__title mb-3">{{ section.title }}</h2>
+			{% endif %}
+			{% if section.subtitle %}
+			<div {{ classNames('section__subtitle', 'mb-3', {
+				'mt-3': section.title
+			}) }}>{{ section.subtitle }}</div>
+			{% endif %}
+		</div>
+		{% endif %}
+
+		<div {{ classNames('section__form', {
+			'mt-4': has_text
+		}) }}>
+			<form name="{{ section.form_id }}" id="{{ section.form_id }}"{% if section.form_action %} action="{{ section.form_action }}"{% endif %} method="POST" data-netlify="true" data-netlify-honeypot="{{ section.form_id }}-bot-field">
+				<div class="sr-only">
+					<label id="{{ section.form_id }}-honeypot-label" for="{{ section.form_id }}-honeypot">Don't fill this out if you're human:</label>
+					<input aria-labelledby="{{ section.form_id }}-honeypot-label" id="{{ section.form_id }}-honeypot" name="{{ section.form_id }}-bot-field" />
+				</div>
+				<input aria-labelledby="{{ section.form_id }}-honeypot-label" type="hidden" name="form-name" value="{{ section.form_id }}" />
+				{% if section.form_fields %}
+					{% for field in section.form_fields %}
+					<div class="mb-3">
+						{% set include_dict = {'field': field} %}
+						{% include "form_field.html" %}
+					</div>
+					{% endfor %}
+				{% endif %}
+				<div class="form__submit mt-4">
+					<button type="submit" class="btn btn--primary">{{ section.submit_label }}</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</section>

@@ -1,0 +1,15 @@
+{% set menu = include_dict.header_menu %}
+{% set font_size = include_dict.font_size %}
+<ul {{ classNames('menu', {
+	'menu--large': font_size == 'large'
+}) }}>
+{% for item in menu %}
+	<li {{ classNames('menu__item', {
+		'mb-2': font_size == 'regular',
+		'mb-3': font_size == 'large'
+	}) }}>
+		{% set include_dict = {'action': item} %}
+		{% include "action.html" %}
+	</li>
+{% endfor %}
+</ul>

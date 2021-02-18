@@ -1,0 +1,74 @@
+{% set section = include_dict.section %}
+{% set align_x = section.align | default('left', true) %}
+{% set padding_top = section.padding_top | default('medium', true) %}
+{% set padding_bottom = section.padding_bottom | default('medium', true) %}
+{% set bg_color = section.background_color | default('none', true) %}
+
+<section {{ classNames('section', 'blog-feed', {
+	'bg-gray': bg_color == 'gray',
+	'pt-4': padding_top == 'small',
+	'pt-6': padding_top == 'medium' or padding_top == 'large',
+	'pt-md-8': padding_top == 'large',
+	'pb-4': padding_bottom == 'small',
+	'pb-6': padding_bottom == 'medium' or padding_bottom == 'large',
+	'pb-md-8': padding_bottom == 'large'
+}) }}>
+	<div class="container">
+
+		{% if section.title %}
+		<h2 {{ classNames('section__title', 'mb-3', {
+			'text-center': align_x == 'center'
+		}) }}>{{ section.title }}</h2>
+		{% endif %}
+
+		{% if section.subtitle %}
+		<div {{ classNames('section__subtitle', 'mb-3', {
+			'mt-3': section.title,
+			'text-center': align_x == 'center'
+		}) }}>{{ section.subtitle }}</div>
+		{% endif %}
+
+		{% if section.posts %}
+		<div {{ classNames('grid', {
+			'mt-5': section.title or section.subtitle
+		}) }}>
+			<div class="cell-12 cell-md-7">
+				<div class="sticky">
+					<div class="grid blog-feed__left">
+						{% set left_posts = section.posts | slice_array(0, 1) %}
+						{% for post in left_posts %}
+							{% set post_page = getPageByFilePath(post) %}
+							{% if post_page %}
+								{% set include_dict = {'blog_feed_section': section, 'post_page': post_page, 'columns': 'one'} %}
+								{% include "blog_post_feed_item.html" %}
+							{% endif %}
+						{% endfor %}
+					</div>
+				</div>
+			</div>
+			<div class="cell-12 cell-md-5">
+				<div class="grid blog-feed__right">
+					{% set right_posts = section.posts | slice_array(1) %}
+					{% for post in right_posts %}
+						{% set post_page = getPageByFilePath(post) %}
+						{% if post_page %}
+							{% set include_dict = {'blog_feed_section': section, 'post_page': post_page, 'columns': 'two'} %}
+							{% include "blog_post_feed_item.html" %}
+						{% endif %}
+					{% endfor %}
+				</div>
+			</div>
+		</div>		
+		{% endif %}
+
+		{% if section.actions %}
+		<div {{ classNames('section__actions', 'mt-4', 'btn-group', {
+			'justify-center': align_x == 'center'
+		}) }}>
+			{% set include_dict = {'actions': section.actions} %}
+			{% include "section_actions.html" %}
+		</div>
+		{% endif %}
+
+	</div>
+</section>

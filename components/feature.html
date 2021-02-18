@@ -1,0 +1,61 @@
+{% set section = include_dict.section %}
+{% set feature = include_dict.feature %}
+{% set feature_padding_bottom = section.feature_padding_bottom | default('medium', true) %}
+{% set align_x = feature.align | default('left', true) %}
+{% set has_text = false %}
+{% if feature.title or feature.content or feature.actions %}
+	{% set has_text = true %}
+{% endif %}
+{% set has_image = false %}
+{% if feature.image %}
+	{% set has_image = true %}
+{% endif %}
+{% set image_pos = feature.image_position | default('left', true) %}
+
+<div {{ classNames('feature', {
+	'py-3': feature_padding_bottom == 'small',
+	'py-4': feature_padding_bottom != 'small',
+	'py-sm-6': feature_padding_bottom == 'large'
+}) }}>
+	<div class="grid items-center">
+		{% if has_image %}
+		<div {{ classNames('feature__image', 'text-center', 'cell-12', {
+			'cell-md-6': has_text,
+			'mb-4': has_text,
+			'mb-md-0': has_text
+		}) }}>
+			<img src="{{ feature.image | relative_url }}" alt="{{ feature.image_alt }}" />
+		</div>
+		{% endif %}
+		{% if has_text %}
+		<div {{ classNames('feature__body', 'cell-12', {
+			'cell-md-6': has_image,
+			'order-md-first': has_image and image_pos == 'right',
+			'text-center': align_x == 'center'
+		}) }}>
+			{% if feature.title %}
+				{% if section.title %}
+				<h3 class="feature__title h2">{{ feature.title }}</h3>
+				{% else %}
+				<h2 class="feature__title h2">{{ feature.title }}</h2>
+				{% endif %}
+			{% endif %}
+			{% if feature.content %}
+			<div class="feature__copy">
+				{{ feature.content | markdownify }}
+			</div>
+			{% endif %}
+			{% if feature.actions %}
+			<div {{ classNames('feature__actions', 'btn-group', {
+				'justify-center': align_x == 'center',
+				'justify-end': align_x == 'right',
+				'mt-4': feature.title or feature.content
+			}) }}>
+				{% set include_dict = {'actions': feature.actions} %}
+				{% include "section_actions.html" %}
+			</div>
+			{% endif %}
+		</div>
+		{% endif %}
+	</div>
+</div>

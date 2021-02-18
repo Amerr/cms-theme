@@ -1,0 +1,26 @@
+{% set section = include_dict.blog_feed_section %}
+{% set section_author = include_dict.section_author %}
+{% set section_category = include_dict.section_category %}
+{% set blog_feed_cols = section.blog_feed_cols | default('four', true) %}
+{% set post = include_dict.post_page %}
+
+{% if section_author %}
+	{% if post.author %}
+		{% set post_author = getData(post.author) %}
+		{% if post_author.id == section_author.id %}
+			{% set include_dict = {'blog_feed_section': section, 'columns': blog_feed_cols, 'post_page': post} %}
+			{% include "blog_post_feed_item.html" %}
+		{% endif %}
+	{% endif %}
+{% elif section_category %}
+	{% if post.category %}
+		{% set post_category = getData(post.category) %}
+		{% if post_category.id == section_category.id %}
+			{% set include_dict = {'blog_feed_section': section, 'columns': blog_feed_cols, 'post_page': post} %}
+			{% include "blog_post_feed_item.html" %}
+		{% endif %}
+	{% endif %}
+{% else %}
+	{% set include_dict = {'blog_feed_section': section, 'columns': blog_feed_cols, 'post_page': post} %}
+	{% include "blog_post_feed_item.html" %}
+{% endif %}

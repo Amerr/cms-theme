@@ -1,0 +1,61 @@
+{% set page = include_dict.page %}
+{% set section = include_dict.section %}
+{% set align_x = section.align | default('left', true) %}
+{% set padding_top = section.padding_top | default('medium', true) %}
+{% set padding_bottom = section.padding_bottom | default('medium', true) %}
+{% set bg_color = section.background_color | default('none', true) %}
+{% set blog_feed_cols = section.blog_feed_cols | default('four', true) %}
+
+<section {{ classNames('section', 'blog-feed', {
+	'bg-gray': bg_color == 'gray',
+	'pt-4': padding_top == 'small',
+	'pt-6': padding_top == 'medium' or padding_top == 'large',
+	'pt-md-8': padding_top == 'large',
+	'pb-4': padding_bottom == 'small',
+	'pb-6': padding_bottom == 'medium' or padding_bottom == 'large',
+	'pb-md-8': padding_bottom == 'large'
+}) }}>
+	<div class="container">
+
+		{% if section.title %}
+		<h2 {{ classNames('section__title', 'mb-3', {
+			'text-center': align_x == 'center'
+		}) }}>{{ section.title }}</h2>
+		{% endif %}
+
+		{% if section.subtitle %}
+		<div {{ classNames('section__subtitle', 'mb-3', {
+			'mt-3': section.title,
+			'text-center': align_x == 'center'
+		}) }}>{{ section.subtitle }}</div>
+		{% endif %}
+
+		{% if page.params.category %}
+		<div {{ classNames('grid', {
+			'mt-5': section.title or section.subtitle
+		}) }}>
+			{% set read_more_category = getData(page.params.category) %}
+			{% set posts_all = getPages("/articles") | where('title', '!=', page.params.title) %}
+			{% set posts_sorted = posts_all | sort(true, true, "date") %}
+			{% set post_count = 0 %}
+			{% for post in posts_sorted %}
+				{% set is_post = false %}
+				{% if post.layout == 'post' %}
+					{% set is_post = true %}
+				{% endif %}
+				{% if is_post and post_count < 4 %}
+					{% if post.params.category %}
+						{% set post_category = getData(post.category) %}
+						{% if post_category.id == read_more_category.id %}
+							{% set post_count = post_count + 1 %}
+							{% set include_dict = {'blog_feed_section': section, 'post_page': post, 'columns': blog_feed_cols} %}
+							{% include "blog_post_feed_item.html" %}
+						{% endif %}
+					{% endif %}
+				{% endif %}
+			{% endfor %}
+		</div>
+		{% endif %}
+
+	</div>
+</section>

@@ -1,0 +1,54 @@
+<footer {{ classNames('site-footer', 'bg-blue', 'pt-8', 'pb-6', {
+	'bg-text': site.params.footer.title
+}) }}>
+	<div class="container">
+
+		{% if site.params.footer.title %}
+		<div class="site-footer__text flex justify-center items-center text-center">{{ site.params.footer.title }}</div>
+		{% endif %}
+
+		{% if site.params.footer.has_social and site.params.footer.social_links %}
+		<div class="site-footer__social mt-4 mb-5">
+			<ul class="menu flex items-center justify-center flex-wrap">
+			{% for action in site.params.footer.social_links %}
+				<li class="menu__item mb-3 mx-3">
+					{% set include_dict = {'action': action} %}
+					{% include "action.html" %}
+				</li>
+			{% endfor %}
+			</ul>
+		</div>
+		{% endif %}
+		
+		{% if site.params.footer.logo %}
+		<div class="site-footer__logo text-center mt-4 mb-6">
+			<img src="{{ site.params.footer.logo | relative_url }}" alt="{{ site.params.footer.logo_alt }}" />
+		</div>
+		{% endif %}
+
+		{% if site.params.footer.has_nav and site.params.footer.nav_links %}
+		<div class="site-footer__nav mt-4 mb-5">
+			<ul class="menu flex items-center justify-center flex-wrap">
+			{% for action in site.params.footer.nav_links %}
+				<li class="menu__item mb-3 mx-3">
+					{% set include_dict = {'action': action} %}
+					{% include "action.html" %}
+				</li>
+			{% endfor %}
+			</ul>
+		</div>
+		{% endif %}
+		
+		{% if site.params.footer.content or site.params.footer.links %}
+		<div class="site-footer__info text-center mt-4 mb-6">
+			{{ site.params.footer.content | safe }}
+			&nbsp;
+			{% for action in site.params.footer.links %}
+				{% set include_dict = {'action': action} %}
+				{% include "action_link.html" %}
+			{% endfor %}
+		</div>
+		{% endif %}
+
+	</div>
+</footer>

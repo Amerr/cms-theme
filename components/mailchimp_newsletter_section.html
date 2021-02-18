@@ -1,0 +1,64 @@
+{% set section = include_dict.section %}
+{% set section_index = include_dict.section_index %}
+{% set padding_top = section.padding_top | default('medium', true) %}
+{% set padding_bottom = section.padding_bottom | default('medium', true) %}
+{% set align_x = section.align | default('left', true) %}
+{% set bg_color = section.background_color | default('none', true) %}
+{% set has_text = false %}
+{% if section.title or section.subtitle %}
+	{% set has_text = true %}
+{% endif %}
+
+<section {{ classNames('section', 'newsletter-section', {
+	'bg-blue': bg_color == 'blue',
+	'bg-gray': bg_color == 'gray',
+	'pt-4': padding_top == 'small',
+	'pt-6': padding_top == 'medium' or padding_top == 'large',
+	'pt-md-8': padding_top == 'large',
+	'pb-4': padding_bottom == 'small',
+	'pb-6': padding_bottom == 'medium' or padding_bottom == 'large',
+	'pb-md-8': padding_bottom == 'large'
+}) }}>
+
+	<div class="container">
+		<div class="grid items-center justify-center">
+			{% if has_text %}
+			<div {{ classNames('section__body', 'cell-12', 'cell-md-6', {
+				'text-center': align_x == 'center'
+			}) }}>
+				{% if section.title %}
+				<h2 class="section__title mb-3">{{ section.title }}</h2>
+				{% endif %}
+				{% if section.subtitle %}
+				<div {{ classNames('section__subtitle', 'mb-3', {
+					'mt-3': section.title
+				}) }}>{{ section.subtitle }}</div>
+				{% endif %}
+			</div>
+			{% endif %}
+
+			<div {{ classNames('section__form', 'cell-12', 'cell-md-6', 'mt-md-0', {
+				'mt-3': has_text
+			}) }}>
+				<form class="mc-form" name="{{ section.form_id }}" id="{{ section.form_id }}" action="{{ section.form_action }}" method="POST">
+					<div class="flex flex-column flex-lg-row flex-lg-wrap">
+						<label id="email-{{ section_index }}-label" class="email-field flex-auto">
+							<span class="sr-only">{{ section.email_label }}</span>
+							<input type="email" id="EMAIL-{{ section_index }}" name="EMAIL" placeholder="{{ section.email_placeholder }}" required />
+						</label>
+						{% if section.confirmation_label %}
+						<label id="checkbox-{{ section_index }}-label" class="checkbox-field flex items-center mt-3">
+							<input class="checkbox-input" type="checkbox" id="checkbox-{{ section_index }}" name="checkbox-{{ section_index }}" required>
+							<div class="checkbox-custom-input"></div>
+							<span class="checkbox-label">{{ section.confirmation_label }}</span>
+						</label>
+						{% endif %}
+						<div class="mc-form__submit mt-3 mt-lg-0 ml-lg-3">
+							<button type="submit" class="btn btn--primary">{{ section.submit_label }}</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</section>

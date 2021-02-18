@@ -1,0 +1,78 @@
+{% set section = include_dict.section %}
+{% set align_x = section.align | default('left', true) %}
+{% set padding_top = section.padding_top | default('medium', true) %}
+{% set padding_bottom = section.padding_bottom | default('medium', true) %}
+{% set bg_color = section.background_color | default('none', true) %}
+{% set has_subtitle = false %}
+{% if section.subtitle %}
+	{% set has_subtitle = true %}
+{% endif %}
+
+<section {{ classNames('section', 'blog-feed', {
+	'bg-gray': bg_color == 'gray',
+	'pt-4': padding_top == 'small',
+	'pt-6': padding_top == 'medium' or padding_top == 'large',
+	'pt-md-8': padding_top == 'large',
+	'pb-4': padding_bottom == 'small',
+	'pb-6': padding_bottom == 'medium' or padding_bottom == 'large',
+	'pb-md-8': padding_bottom == 'large'
+}) }}>
+	<div class="container">
+
+		{% if section.title %}
+		<h2 {{ classNames('section__title', 'mb-3', {
+			'text-center': align_x == 'center'
+		}) }}>{{ section.title }}</h2>
+		{% endif %}
+
+		{% if section.subtitle %}
+		<div {{ classNames('section__subtitle', 'mb-3', {
+			'mt-3': section.title,
+			'text-center': align_x == 'center'
+		}) }}>{{ section.subtitle }}</div>
+		{% endif %}
+
+		<div {{ classNames('grid', {
+			'mt-5': section.title or section.subtitle
+		}) }}>
+			{% set section_author = false %}
+			{% if section.author %}
+				{% set section_author = getData(section.author) %}
+			{% endif %}
+
+			{% set section_category = false %}
+			{% if section.category %}
+				{% set section_category = getData(section.category) %}
+			{% endif %}
+
+			{% set posts_all = getPages("/articles") %}
+			{% set posts_sorted = posts_all | sort(true, true, "date") %}
+
+			{% set show_recent = section.show_recent %}
+			{% set recent_count = section.recent_count %}
+			{% set post_count = 0 %}
+
+			{% for post in posts_sorted %}
+				{% set is_post = false %}
+				{% if post.layout == 'post' %}
+					{% set is_post = true %}
+				{% endif %}
+				{% if is_post and (show_recent == false or post_count < recent_count) %}
+				{% set post_count = post_count + 1 %}
+				{% set include_dict = {'blog_feed_section': section, 'post_page': post, 'section_author': section_author, 'section_category': section_category} %}
+				{% include "blog_feed_item_filter.html" %}
+				{% endif %}
+			{% endfor %}
+		</div>
+
+		{% if section.actions %}
+		<div {{ classNames('section__actions', 'mt-4', 'btn-group', {
+			'justify-center': align_x == 'center'
+		}) }}>
+			{% set include_dict = {'actions': section.actions} %}
+			{% include "section_actions.html" %}
+		</div>
+		{% endif %}
+
+	</div>
+</section>
